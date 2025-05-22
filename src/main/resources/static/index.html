@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>공통 코드 관리 시스템</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .section-title {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .btn-action {
+            margin-right: 5px;
+        }
+        th:last-child, td:last-child {
+            text-align: right;
+            white-space: nowrap;
+        }
+        .pagination {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- 그룹 코드 섹션 -->
+        <div class="row">
+            <div class="col-12">
+                <h2 class="section-title">그룹 코드 관리</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>그룹 코드</th>
+                                        <th>그룹 코드명</th>
+                                        <th>그룹 코드 설명</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="groupCodeTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 페이지네이션 -->
+                        <nav>
+                            <ul class="pagination justify-content-center" id="groupCodePagination">
+                            </ul>
+                        </nav>
+
+                        <!-- 그룹 코드 폼 -->
+                        <div class="card mt-3">
+                            <div class="card-header" id="groupCodeFormTitle">
+                                그룹 코드 생성
+                            </div>
+                            <div class="card-body">
+                                <form id="groupCodeForm">
+                                    <input type="hidden" id="groupCodeFormMode" value="create">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="groupCode">그룹 코드</label>
+                                                <input type="text" class="form-control" id="groupCode" name="groupCode" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="groupCodeName">그룹 코드명</label>
+                                                <input type="text" class="form-control" id="groupCodeName" name="groupCodeName" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label for="groupCodeDesc">그룹 코드 설명</label>
+                                                <input type="text" class="form-control" id="groupCodeDesc" name="groupCodeDesc">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-3">
+                                        <button type="button" class="btn btn-primary" id="saveGroupCodeBtn">저장</button>
+                                        <button type="button" class="btn btn-secondary" id="resetGroupCodeBtn">취소</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 코드 섹션 -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <h2 class="section-title">코드 관리 <small id="selectedGroupCodeTitle"></small></h2>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>코드</th>
+                                        <th>코드명</th>
+                                        <th>코드명 약어</th>
+                                        <th>순서</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="codeTableBody">
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 페이지네이션 -->
+                        <nav>
+                            <ul class="pagination justify-content-center" id="codePagination">
+                            </ul>
+                        </nav>
+
+                        <!-- 코드 폼 -->
+                        <div class="card mt-3" id="codeFormCard" style="display: none;">
+                            <div class="card-header" id="codeFormTitle">
+                                코드 생성
+                            </div>
+                            <div class="card-body">
+                                <form id="codeForm">
+                                    <input type="hidden" id="codeFormMode" value="create">
+                                    <input type="hidden" id="codeGroupCode" name="groupCode">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="code">코드</label>
+                                                <input type="text" class="form-control" id="code" name="code" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="codeName">코드명</label>
+                                                <input type="text" class="form-control" id="codeName" name="codeName" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="codeNameBrief">코드명 약어</label>
+                                                <input type="text" class="form-control" id="codeNameBrief" name="codeNameBrief">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="orderNo">순서</label>
+                                                <input type="number" class="form-control" id="orderNo" name="orderNo" value="0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-3">
+                                        <button type="button" class="btn btn-primary" id="saveCodeBtn">저장</button>
+                                        <button type="button" class="btn btn-secondary" id="resetCodeBtn">취소</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let currentGroupCodePage = 0;
+        let groupCodePageSize = 10;
+        let totalGroupCodePages = 0;
+
+        let currentCodePage = 0;
+        let codePageSize = 10;
+        let totalCodePages = 0;
+
+        let selectedGroupCode = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 그룹 코드 목록 로드
+            loadGroupCodes(currentGroupCodePage, groupCodePageSize);
+
+            document.getElementById('saveGroupCodeBtn').addEventListener('click', saveGroupCode);
+            document.getElementById('resetGroupCodeBtn').addEventListener('click', resetGroupCodeForm);
+            document.getElementById('saveCodeBtn').addEventListener('click', saveCode);
+            document.getElementById('resetCodeBtn').addEventListener('click', resetCodeForm);
+        });
+
+        // 그룹 코드 목록 로드
+        function loadGroupCodes(pageNumber, pageSize) {
+            fetch(`/api/groupcodes?pageNumber=${pageNumber}&pageSize=${pageSize}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        renderGroupCodes(data.groupCodeDtoList);
+                        renderGroupCodePagination(pageNumber, Math.ceil(data.count / pageSize));
+                    } else {
+                        alert('그룹 코드 목록을 불러오는데 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('그룹 코드 목록을 불러오는데 실패했습니다.');
+                });
+        }
+
+        // 그룹 코드 목록 렌더링
+        function renderGroupCodes(groupCodes) {
+            const tableBody = document.getElementById('groupCodeTableBody');
+            tableBody.innerHTML = '';
+
+            if (groupCodes.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="4" class="text-center">데이터가 없습니다.</td>';
+                tableBody.appendChild(row);
+                return;
+            }
+
+            groupCodes.forEach(groupCode => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${groupCode.groupCode}</td>
+                    <td>${groupCode.groupCodeName}</td>
+                    <td>${groupCode.groupCodeDesc || ''}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary btn-action edit-group-code" data-group-code="${groupCode.groupCode}">수정</button>
+                        <button class="btn btn-sm btn-danger btn-action delete-group-code" data-group-code="${groupCode.groupCode}">삭제</button>
+                    </td>
+                `;
+                row.style.cursor = 'pointer';
+                row.setAttribute('data-group-code', groupCode.groupCode);
+                row.setAttribute('data-group-code-name', groupCode.groupCodeName);
+                tableBody.appendChild(row);
+            });
+
+            // 이벤트 리스너 등록
+            document.querySelectorAll('.edit-group-code').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.stopPropagation(); // 이벤트 버블링 방지
+                    const groupCode = this.getAttribute('data-group-code');
+                    editGroupCode(groupCode);
+                });
+            });
+
+            document.querySelectorAll('.delete-group-code').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.stopPropagation(); // 이벤트 버블링 방지
+                    const groupCode = this.getAttribute('data-group-code');
+                    deleteGroupCode(groupCode);
+                });
+            });
+
+            // 행 클릭 이벤트 리스너 추가
+            document.querySelectorAll('#groupCodeTableBody tr').forEach(row => {
+                row.addEventListener('click', function(event) {
+                    if (event.target.tagName.toLowerCase() !== 'button') {
+                        const groupCode = this.getAttribute('data-group-code');
+                        const groupCodeName = this.getAttribute('data-group-code-name');
+                        selectGroupCode(groupCode, groupCodeName);
+                    }
+                });
+            });
+        }
+
+        // 그룹 코드 페이지네이션 렌더링
+        function renderGroupCodePagination(currentPage, totalPages) {
+            const pagination = document.getElementById('groupCodePagination');
+            pagination.innerHTML = '';
+
+            totalGroupCodePages = totalPages;
+
+            // 이전 버튼
+            const prevItem = document.createElement('li');
+            prevItem.className = `page-item ${currentPage === 0 ? 'disabled' : ''}`;
+            prevItem.innerHTML = `<a class="page-link" href="#" ${currentPage === 0 ? '' : `onclick="loadGroupCodes(${currentPage - 1}, ${groupCodePageSize}); return false;"`}>이전</a>`;
+            pagination.appendChild(prevItem);
+
+            // 페이지 번호
+            for (let i = 0; i < totalPages; i++) {
+                const pageItem = document.createElement('li');
+                pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                pageItem.innerHTML = `<a class="page-link" href="#" onclick="loadGroupCodes(${i}, ${groupCodePageSize}); return false;">${i + 1}</a>`;
+                pagination.appendChild(pageItem);
+            }
+
+            // 다음 버튼
+            const nextItem = document.createElement('li');
+            nextItem.className = `page-item ${currentPage === totalPages - 1 || totalPages === 0 ? 'disabled' : ''}`;
+            nextItem.innerHTML = `<a class="page-link" href="#" ${currentPage === totalPages - 1 || totalPages === 0 ? '' : `onclick="loadGroupCodes(${currentPage + 1}, ${groupCodePageSize}); return false;"`}>다음</a>`;
+            pagination.appendChild(nextItem);
+
+            currentGroupCodePage = currentPage;
+        }
+
+        // 그룹 코드 수정
+        function editGroupCode(groupCode) {
+            fetch(`/api/groupcodes/${groupCode}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        const groupCodeDto = data.groupCodeDto;
+                        document.getElementById('groupCode').value = groupCodeDto.groupCode;
+                        document.getElementById('groupCode').readOnly = true;
+                        document.getElementById('groupCodeName').value = groupCodeDto.groupCodeName;
+                        document.getElementById('groupCodeDesc').value = groupCodeDto.groupCodeDesc || '';
+                        document.getElementById('groupCodeFormMode').value = 'update';
+                        document.getElementById('groupCodeFormTitle').textContent = '그룹 코드 수정';
+                    } else {
+                        alert('그룹 코드 정보를 불러오는데 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('그룹 코드 정보를 불러오는데 실패했습니다.');
+                });
+        }
+
+        // 그룹 코드 삭제
+        function deleteGroupCode(groupCode) {
+            if (!confirm('정말로 이 그룹 코드를 삭제하시겠습니까?')) {
+                return;
+            }
+
+            fetch(`/api/groupcodes/${groupCode}`, {
+                method: 'DELETE'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        alert('그룹 코드가 삭제되었습니다.');
+                        loadGroupCodes(currentGroupCodePage, groupCodePageSize);
+
+                        // 선택된 그룹 코드가 삭제된 경우 코드 목록 초기화
+                        if (selectedGroupCode === groupCode) {
+                            selectedGroupCode = null;
+                            document.getElementById('selectedGroupCodeTitle').textContent = '';
+                            document.getElementById('codeTableBody').innerHTML = '';
+                            document.getElementById('codePagination').innerHTML = '';
+                            document.getElementById('codeFormCard').style.display = 'none';
+                        }
+                    } else {
+                        alert('그룹 코드 삭제에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('그룹 코드 삭제에 실패했습니다.');
+                });
+        }
+
+        // 그룹 코드 저장 (생성 또는 수정)
+        function saveGroupCode() {
+            const groupCode = document.getElementById('groupCode').value;
+            const groupCodeName = document.getElementById('groupCodeName').value;
+            const groupCodeDesc = document.getElementById('groupCodeDesc').value;
+            const mode = document.getElementById('groupCodeFormMode').value;
+
+            if (!groupCode || !groupCodeName) {
+                alert('그룹 코드와 그룹 코드명은 필수 입력 항목입니다.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('groupCode', groupCode);
+            formData.append('groupCodeName', groupCodeName);
+            formData.append('groupCodeDesc', groupCodeDesc);
+
+            let url = '/api/groupcodes';
+            let method = 'POST';
+
+            if (mode === 'update') {
+                url = `/api/groupcodes/${groupCode}`;
+                method = 'PUT';
+            }
+
+            fetch(url, {
+                method: method,
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        alert(mode === 'create' ? '그룹 코드가 생성되었습니다.' : '그룹 코드가 수정되었습니다.');
+                        resetGroupCodeForm();
+                        loadGroupCodes(currentGroupCodePage, groupCodePageSize);
+                    } else {
+                        alert(mode === 'create' ? '그룹 코드 생성에 실패했습니다.' : '그룹 코드 수정에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(mode === 'create' ? '그룹 코드 생성에 실패했습니다.' : '그룹 코드 수정에 실패했습니다.');
+                });
+        }
+
+        // 그룹 코드 폼 초기화
+        function resetGroupCodeForm() {
+            document.getElementById('groupCode').value = '';
+            document.getElementById('groupCode').readOnly = false;
+            document.getElementById('groupCodeName').value = '';
+            document.getElementById('groupCodeDesc').value = '';
+            document.getElementById('groupCodeFormMode').value = 'create';
+            document.getElementById('groupCodeFormTitle').textContent = '그룹 코드 생성';
+        }
+
+        // 그룹 코드 선택
+        function selectGroupCode(groupCode, groupCodeName) {
+            selectedGroupCode = groupCode;
+            document.getElementById('selectedGroupCodeTitle').textContent = `(${groupCodeName})`;
+            document.getElementById('codeFormCard').style.display = 'block';
+            document.getElementById('codeGroupCode').value = groupCode;
+            resetCodeForm();
+            loadCodes(groupCode, 0, codePageSize);
+        }
+
+        // 코드 목록 로드
+        function loadCodes(groupCode, pageNumber, pageSize) {
+            fetch(`/api/codes?groupCode=${groupCode}&pageNumber=${pageNumber}&pageSize=${pageSize}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        renderCodes(data.codeDtoList);
+                        renderCodePagination(groupCode, pageNumber, Math.ceil(data.count / pageSize));
+                    } else {
+                        alert('코드 목록을 불러오는데 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('코드 목록을 불러오는데 실패했습니다.');
+                });
+        }
+
+        // 코드 목록 렌더링
+        function renderCodes(codes) {
+            const tableBody = document.getElementById('codeTableBody');
+            tableBody.innerHTML = '';
+
+            if (codes.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="5" class="text-center">데이터가 없습니다.</td>';
+                tableBody.appendChild(row);
+                return;
+            }
+
+            codes.forEach(code => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${code.code}</td>
+                    <td>${code.codeName}</td>
+                    <td>${code.codeNameBrief || ''}</td>
+                    <td>${code.orderNo}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary btn-action edit-code" data-group-code="${code.groupCode}" data-code="${code.code}">수정</button>
+                        <button class="btn btn-sm btn-danger btn-action delete-code" data-group-code="${code.groupCode}" data-code="${code.code}">삭제</button>
+                    </td>
+                `;
+                row.style.cursor = 'pointer';
+                tableBody.appendChild(row);
+            });
+
+            // 이벤트 리스너 등록
+            document.querySelectorAll('.edit-code').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.stopPropagation(); // 이벤트 버블링 방지
+                    const groupCode = this.getAttribute('data-group-code');
+                    const code = this.getAttribute('data-code');
+                    editCode(groupCode, code);
+                });
+            });
+
+            document.querySelectorAll('.delete-code').forEach(button => {
+                button.addEventListener('click', function(event) {
+                    event.stopPropagation(); // 이벤트 버블링 방지
+                    const groupCode = this.getAttribute('data-group-code');
+                    const code = this.getAttribute('data-code');
+                    deleteCode(groupCode, code);
+                });
+            });
+
+            // 행 클릭 이벤트 리스너 추가 - 코드 행을 클릭하면 수정 화면으로 이동
+            document.querySelectorAll('#codeTableBody tr').forEach(row => {
+                row.addEventListener('click', function(event) {
+                    if (event.target.tagName.toLowerCase() !== 'button') {
+                        const editButton = this.querySelector('.edit-code');
+                        if (editButton) {
+                            const groupCode = editButton.getAttribute('data-group-code');
+                            const code = editButton.getAttribute('data-code');
+                            editCode(groupCode, code);
+                        }
+                    }
+                });
+            });
+        }
+
+        // 코드 페이지네이션 렌더링
+        function renderCodePagination(groupCode, currentPage, totalPages) {
+            const pagination = document.getElementById('codePagination');
+            pagination.innerHTML = '';
+
+            totalCodePages = totalPages;
+
+            // 이전 버튼
+            const prevItem = document.createElement('li');
+            prevItem.className = `page-item ${currentPage === 0 ? 'disabled' : ''}`;
+            prevItem.innerHTML = `<a class="page-link" href="#" ${currentPage === 0 ? '' : `onclick="loadCodes('${groupCode}', ${currentPage - 1}, ${codePageSize}); return false;"`}>이전</a>`;
+            pagination.appendChild(prevItem);
+
+            // 페이지 번호
+            for (let i = 0; i < totalPages; i++) {
+                const pageItem = document.createElement('li');
+                pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
+                pageItem.innerHTML = `<a class="page-link" href="#" onclick="loadCodes('${groupCode}', ${i}, ${codePageSize}); return false;">${i + 1}</a>`;
+                pagination.appendChild(pageItem);
+            }
+
+            // 다음 버튼
+            const nextItem = document.createElement('li');
+            nextItem.className = `page-item ${currentPage === totalPages - 1 || totalPages === 0 ? 'disabled' : ''}`;
+            nextItem.innerHTML = `<a class="page-link" href="#" ${currentPage === totalPages - 1 || totalPages === 0 ? '' : `onclick="loadCodes('${groupCode}', ${currentPage + 1}, ${codePageSize}); return false;"`}>다음</a>`;
+            pagination.appendChild(nextItem);
+
+            currentCodePage = currentPage;
+        }
+
+        // 코드 수정
+        function editCode(groupCode, code) {
+            fetch(`/api/codes/${groupCode}/${code}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        const codeDto = data.codeDto;
+                        document.getElementById('code').value = codeDto.code;
+                        document.getElementById('code').readOnly = true;
+                        document.getElementById('codeName').value = codeDto.codeName;
+                        document.getElementById('codeNameBrief').value = codeDto.codeNameBrief || '';
+                        document.getElementById('orderNo').value = codeDto.orderNo;
+                        document.getElementById('codeFormMode').value = 'update';
+                        document.getElementById('codeFormTitle').textContent = '코드 수정';
+                    } else {
+                        alert('코드 정보를 불러오는데 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('코드 정보를 불러오는데 실패했습니다.');
+                });
+        }
+
+        // 코드 삭제
+        function deleteCode(groupCode, code) {
+            if (!confirm('정말로 이 코드를 삭제하시겠습니까?')) {
+                return;
+            }
+
+            fetch(`/api/codes/${groupCode}/${code}`, {
+                method: 'DELETE'
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        alert('코드가 삭제되었습니다.');
+                        loadCodes(groupCode, currentCodePage, codePageSize);
+                    } else {
+                        alert('코드 삭제에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('코드 삭제에 실패했습니다.');
+                });
+        }
+
+        // 코드 저장 (생성 또는 수정)
+        function saveCode() {
+            const groupCode = document.getElementById('codeGroupCode').value;
+            const code = document.getElementById('code').value;
+            const codeName = document.getElementById('codeName').value;
+            const codeNameBrief = document.getElementById('codeNameBrief').value;
+            const orderNo = document.getElementById('orderNo').value;
+            const mode = document.getElementById('codeFormMode').value;
+
+            if (!code || !codeName) {
+                alert('코드와 코드명은 필수 입력 항목입니다.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('groupCode', groupCode);
+            formData.append('code', code);
+            formData.append('codeName', codeName);
+            formData.append('codeNameBrief', codeNameBrief);
+            formData.append('orderNo', orderNo);
+
+            let url = '/api/codes';
+            let method = 'POST';
+
+            if (mode === 'update') {
+                method = 'PUT';
+            }
+
+            fetch(url, {
+                method: method,
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        alert(mode === 'create' ? '코드가 생성되었습니다.' : '코드가 수정되었습니다.');
+                        resetCodeForm();
+                        loadCodes(groupCode, currentCodePage, codePageSize);
+                    } else {
+                        alert(mode === 'create' ? '코드 생성에 실패했습니다.' : '코드 수정에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(mode === 'create' ? '코드 생성에 실패했습니다.' : '코드 수정에 실패했습니다.');
+                });
+        }
+
+        // 코드 폼 초기화
+        function resetCodeForm() {
+            document.getElementById('code').value = '';
+            document.getElementById('code').readOnly = false;
+            document.getElementById('codeName').value = '';
+            document.getElementById('codeNameBrief').value = '';
+            document.getElementById('orderNo').value = '0';
+            document.getElementById('codeFormMode').value = 'create';
+            document.getElementById('codeFormTitle').textContent = '코드 생성';
+        }
+    </script>
+</body>
+</html>
