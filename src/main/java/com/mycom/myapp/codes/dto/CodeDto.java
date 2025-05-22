@@ -1,11 +1,16 @@
 package com.mycom.myapp.codes.dto;
 
 import com.mycom.myapp.codes.entity.Code;
+
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CodeDto {
 
     private String groupCode;
